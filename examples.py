@@ -1,18 +1,20 @@
+import pickle
+
 import pandas as pd
 
 from classes.vsgi import VGSI
 
 if __name__ == "__main__":
-    town = 'concordma'
+    town = 'lexingtonma'
     v = VGSI(town)
 
     urls = v.step1_scrape_links()
-    with open('urls.txt', 'w') as f:
-        f.writelines([url + '\n' for url in urls])
+    with open(f'{town}-urls.p', 'wb') as f:
+        pickle.dump(urls, f)
 
     urls = None
-    with open('urls.txt', 'r') as f:
-        urls = f.readlines()
+    with open(f'{town}-urls.p', 'rb') as f:
+        urls = pickle.load(f)
     v.step2_download_htmls([url.strip() for url in urls])
 
     df = v.step3_parse_htmls()
@@ -21,30 +23,34 @@ if __name__ == "__main__":
     df = pd.read_pickle(f'{town}.p')
     df = v.step4_post_process(df)
 
+    # further processing
+    sf = df[df['usecodedesc'] == 'Single Fam  MDL-01']  # single family homes
+    sf[['builtarea', 'landarea']].describe()  # areas
+    sf[['total2021', 'total2020']].describe()  # values
+
     print()
 
 # df.sample().iloc[0]
-# pid                             1494
-# location                   81 OAK ST
-# owner             ANDERSON JAMES J &
-# coowner            ANDERSON JANICE F
-# saleprice                         $1
-# saledate                  03/19/2009
-# yearbuilt                       1972
-# builtarea                      1,819
-# usecode                         1010
-# usecodedesc       Single Fam  MDL-01
-# zone                              RS
-# neighborhood                      20
-# landarea                        5400
-# style                  TRAD/GAR COL.
-# model                    Residential
-# bedrooms                  3 Bedrooms
-# totalbaths                         1
-# totalhalfbaths                     1
-# totalrooms                         7
-# total2021                   $808,000
-# total2020                   $800,000
-# land2021                    $448,000
-# land2020                    $448,000
-# Name: 1071, dtype: object
+# pid                              4996
+# location            376 CATERINA HTS
+# owner                   SKOLNIK IRA L
+# coowner               SKOLNIK LINDA R
+# saleprice                   1.206e+06
+# saledate          2010-11-15 00:00:00
+# yearbuilt                        1987
+# builtarea                        4724
+# usecode                          1010
+# usecodedesc        Single Fam  MDL-01
+# zone                               AA
+# neighborhood                       29
+# landarea                         1.94
+# style                  Contemp/Modern
+# model                     Residential
+# bedrooms                            4
+# totalbaths                          3
+# totalhalfbaths                      1
+# totalrooms                          9
+# total2021                         NaN
+# total2020                  1.4912e+06
+# land2021                          NaN
+# land2020                       348800

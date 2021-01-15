@@ -1,6 +1,4 @@
 /.vscode
 /__pycache__
-/concordma.p
+/*.p
 /data
-/lexingtonma.p
-/urls.txt

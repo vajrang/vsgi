@@ -1,4 +1,4 @@
-# VSGI Scraper
+# VSGI (Vision Goverment Solutions) Scraper
 
 Utility to scrape property data from https://gis.vgsi.com/
 
@@ -7,6 +7,8 @@ Each step can be quite time consuming, so they are separated by design so that y
 All underlying functions map-reduce the problem by using python's ```multiprocessing``` module. 
 
 This has been tested to work with ```'lexingtonma'``` and ```'concordma'```.
+
+Please see ```example.py``` for more code samples.
 
 ### Usage:
 
