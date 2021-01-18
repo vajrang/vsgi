@@ -36,4 +36,4 @@ def download(folder: str, urls: list):
             pass
         t1 = time.perf_counter()
 
-        print(f'Done, took {t1-t0} secs')
+        print(f'Done, took {t1-t0:.2f} secs')

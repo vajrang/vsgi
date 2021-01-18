@@ -1,10 +1,14 @@
-import multiprocessing as mp
 import os
 import pickle
+import time
+from multiprocessing import Pool
+from multiprocessing.pool import ThreadPool
 
 import pandas as pd
 from bs4 import BeautifulSoup
 from tqdm import tqdm
+
+from . import utils
 
 
 def get_text_from_id(soup, id):
@@ -86,17 +90,28 @@ def process_one_html(filename):
     return None
 
 
+def process_chunk(data):
+    results = []
+    with ThreadPool() as pool:
+        for result in pool.imap_unordered(process_one_html, data):
+            if result:
+                results.append(result)
+    return results
+
+
 def parse_all_htmls(folder: str) -> pd.DataFrame:
     htmls = [os.path.join(folder, file) for file in os.listdir(folder)]
 
     results = []
-    with mp.Pool() as pool:
-        for result in tqdm(
-            pool.imap_unordered(process_one_html, htmls),
-            desc='Parsing htmls',
-            total=len(htmls),
-        ):
-            if result:
-                results.append(result)
+    with Pool() as pool:
+        print(f'Processing in {pool._processes} processes')
+        chunks = utils.chunk(htmls, pool._processes)
+
+        t0 = time.perf_counter()
+        for result in pool.imap_unordered(process_chunk, chunks):
+            results.extend(result)
+        t1 = time.perf_counter()
+
+        print(f'Done, took {t1-t0:.2f} secs')
 
     return pd.DataFrame(results)
