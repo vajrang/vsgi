@@ -9,19 +9,21 @@ if __name__ == "__main__":
     v = VGSI(town)
 
     urls = v.step1_scrape_links()
-    with open(f'{town}-urls.p', 'wb') as f:
+    with open(f'{town}-1-urls.p', 'wb') as f:
         pickle.dump(urls, f)
 
     urls = None
-    with open(f'{town}-urls.p', 'rb') as f:
+    with open(f'{town}-1-urls.p', 'rb') as f:
         urls = pickle.load(f)
     v.step2_download_htmls([url.strip() for url in urls])
 
     df = v.step3_parse_htmls()
-    df.to_pickle(f'{town}.p')
+    df.to_pickle(f'{town}-3-raw.p')
 
-    df = pd.read_pickle(f'{town}.p')
+    df = pd.read_pickle(f'{town}-3-raw.p')
     df = v.step4_post_process(df)
+
+    df.to_pickle(f'{town}-4.p')
 
     # further processing
     sf = df[df['usecodedesc'] == 'Single Fam  MDL-01']  # single family homes

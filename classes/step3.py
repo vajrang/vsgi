@@ -84,7 +84,9 @@ def process_one_html(filename):
     with open(filename, 'r') as file:
         try:
             html_content = file.read()
-            return parse_html_content(html_content)
+            retval = parse_html_content(html_content)
+            retval['filename'] = filename
+            return retval
         except:
             print(f'{filename} had a problem')
     return None
@@ -115,3 +117,7 @@ def parse_all_htmls(folder: str) -> pd.DataFrame:
         print(f'Done, took {t1-t0:.2f} secs')
 
     return pd.DataFrame(results)
+
+
+if __name__ == "__main__":
+    r = process_one_html('data/546.html')
